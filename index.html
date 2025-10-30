@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Solana DePIN Uploader</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(to right, #f0f4ff, #e0ecff);
+      padding: 2rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    h1 {
+      color: #2c3e50;
+      margin-bottom: 1rem;
+    }
+
+    .upload-box {
+      background: #ffffff;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      padding: 2rem;
+      width: 100%;
+      max-width: 500px;
+      text-align: center;
+    }
+
+    input[type="file"] {
+      margin-top: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    button {
+      background-color: #4a90e2;
+      color: white;
+      border: none;
+      padding: 0.6rem 1.2rem;
+      border-radius: 6px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #357ab8;
+    }
+
+    #result {
+      margin-top: 2rem;
+      font-size: 0.95rem;
+      color: #2c3e50;
+    }
+
+    a {
+      color: #4a90e2;
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <h1>Solana DePIN Uploader</h1>
+  <div class="upload-box">
+    <input type="file" id="fileInput" />
+    <br />
+    <button onclick="uploadFile()">Upload to IPFS</button>
+    <div id="result"></div>
+  </div>
+
+  <script>
+    async function uploadFile() {
+      const fileInput = document.getElementById('fileInput');
+      const file = fileInput.files[0];
+      if (!file) return alert('Please select a file');
+
+      const reader = new FileReader();
+      reader.onload = async () => {
+        const base64Data = reader.result.split(',')[1];
+        const response = await fetch('http://localhost:5000/api/content/upload', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            filename: file.name,
+            base64Data: base64Data
+          })
+        });
+
+        const result = await response.json();
+        const output = document.getElementById('result');
+        if (result.cid) {
+          output.innerHTML = `
+            <p><strong>IPFS CID:</strong> ${result.cid}</p>
+            <p><a href="${result.url}" target="_blank">View on IPFS</a></p>
+          `;
+        } else {
+          output.innerHTML = `<p style="color:red;">Upload failed: ${result.error}</p>`;
+        }
+      };
+      reader.readAsDataURL(file);
+    }
+  </script>
+</body>
+</html>

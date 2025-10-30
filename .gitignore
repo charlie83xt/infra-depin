@@ -1,0 +1,9 @@
+node_modules/
+.env
+.DS_Store
+*.log
+*.zip
+*.mp4
+*.mov
+pinata_details.txt
+*.txt
