@@ -21,6 +21,10 @@ A lightweight Solana-native uploader that pins files to IPFS via Pinata.
 npm install
 node app.js
 
+## 🔐 Environment Variables
+Create a `.env` file in the root directory using `.env.example` as a template:
+You can get your keys from [Pinata](https://app.pinata.cloud/)
+
 Frontend
 Open index.html in your browser
 
